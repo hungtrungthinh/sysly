@@ -43,7 +43,7 @@ Sysly is inspired by htop, but built from scratch in Rust using the sysinfo libr
 
 ```bash
 # Clone the repository
-git clone https://github.com/thinhnguyen/sysly.git
+git clone https://github.com/hungtrungthinh/sysly.git
 cd sysly
 
 # Build and run
