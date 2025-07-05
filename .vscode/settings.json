@@ -1,0 +1,33 @@
+{
+    // Use rust-analyzer for advanced Rust IDE features
+    "rust-analyzer.cargo.features": "all",
+    "rust-analyzer.checkOnSave.command": "clippy",
+    "rust-analyzer.procMacro.enable": true,
+    "rust-analyzer.inlayHints.enable": true,
+    "rust-analyzer.diagnostics.enable": true,
+    "rust-analyzer.cargo.runBuildScripts": true,
+
+    // Format code on save
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "rust-lang.rust-analyzer",
+
+    // Use UTF-8 for all files
+    "files.encoding": "utf8",
+
+    // Terminal settings for TUI development
+    "terminal.integrated.defaultProfile.osx": "zsh",
+    "terminal.integrated.fontFamily": "Menlo, Monaco, 'Courier New', monospace",
+    "terminal.integrated.scrollback": 5000,
+
+    // Exclude build artifacts from search
+    "files.exclude": {
+        "target": true,
+        "**/target": true
+    },
+
+    // Recommended extensions
+    "extensions.ignoreRecommendations": false,
+    "[rust]": {
+        "editor.defaultFormatter": "rust-lang.rust-analyzer"
+    }
+} 
