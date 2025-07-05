@@ -10,6 +10,7 @@ Cargo.toml.bak
 # IDE and editor files
 .idea/
 *.swp
+*.swn
 *.swo
 *~
 
