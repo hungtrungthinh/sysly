@@ -1,6 +1,6 @@
 # Sysly – A macOS system monitor mini project written in Rust, inspired by htop's interface.
 
-Sysly is inspired by htop, but built from scratch in Rust using the sysinfo library for system data. It is a macOS-focused system monitoring dashboard experiment, conceived on **July, 2019**, at the airport while waiting for a flight back to hometown. Created as an experiment when switching to a new MacBook, Sysly provides real-time system information with a beautiful terminal user interface built in Rust.
+Sysly is inspired by htop, but built from scratch in Rust using the sysinfo library for system data. It is a macOS-focused system monitoring dashboard experiment, conceived on **July, 2019**, at the airport while waiting for a flight back to hometown.
 
 ![Sysly Dashboard](https://img.shields.io/badge/Version-1.1.0-blue)
 ![Rust](https://img.shields.io/badge/Rust-2021+-orange)
