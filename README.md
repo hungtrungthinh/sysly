@@ -84,8 +84,6 @@ Sysly is built with a modular architecture:
 
 ### Project Origin & Timeline
 
-- **July 1, 2019** - Project conceived at the airport while waiting for a flight back to hometown
-- **2019** - Initial experiment when switching to a new MacBook
 - **2019-2024** - Core functionality development and testing
 - **2025** – Major refactoring with Rust best practices and a complete UI/UX overhaul: modern terminal dashboard powered by ratatui.
 
