@@ -1,3 +1,7 @@
+<a href="https://buymeacoffee.com/x45qN8k" target="_blank">
+  <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" height="50" style="border-radius:8px" />
+</a>
+
 # Sysly – A macOS system monitor mini project written in Rust, inspired by htop's interface.
 
 Sysly is inspired by htop, but built from scratch in Rust using the sysinfo library for system data. It is a macOS-focused system monitoring dashboard experiment, conceived on **July, 2019**, at the airport while waiting for a flight back to hometown.
