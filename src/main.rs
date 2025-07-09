@@ -124,7 +124,6 @@ fn run_application(terminal: &mut Terminal<CrosstermBackend<std::io::Stdout>>) -
 
 /// Handle keyboard events and update application state
 ///
-/// # Arguments
 /// * `app_state` - Current application state to modify
 /// * `key_code` - The key code that was pressed
 fn handle_key_event(app_state: &mut AppState, key_code: KeyCode) {
