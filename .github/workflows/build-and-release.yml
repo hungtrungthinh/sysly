@@ -1,0 +1,45 @@
+name: Build and release sysly binary
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build & release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Rust toolchain
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          toolchain: stable
+
+      - name: Build sysly binary
+        run: cargo build --release
+
+      - name: Extract version from Cargo.toml
+        id: extract_version
+        run: |
+          version=$(grep '^version =' Cargo.toml | cut -d '"' -f 2)
+          echo "version=$version" >> $GITHUB_OUTPUT
+
+      - name: Create GitHub Tag and Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.extract_version.outputs.version }}
+          name: sysly@${{ steps.extract_version.outputs.version }}
+          files: target/release/sysly
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create Deployment Summary
+        run: |
+          echo "## sysly Release v${{ steps.extract_version.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+          echo "### The sysly binary has been built and released successfully." >> $GITHUB_STEP_SUMMARY
+          echo "### 🕒 Released at: $(date)" >> $GITHUB_STEP_SUMMARY
