@@ -15,7 +15,7 @@ Sysly is inspired by htop, but built from scratch in Rust using the sysinfo libr
 ---
 
 <p align="center">
-  <img src="./screenshots/Sysly_ Screenshot.png" alt="Sysly Demo Screenshoot" width="700" />
+  <img src="./screenshots/Sysly_ Screenshot.png" alt="Sysly Demo" width="700" />
   <br/>
   <em>Sysly – A macOS system monitor mini project written in Rust, inspired by htop's interface</em>
 </p>
