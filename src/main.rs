@@ -2,7 +2,10 @@ use std::io;
 use std::time::{Duration, Instant};
 
 use crossterm::{
-    event::{self, DisableMouseCapture, EnableMouseCapture, Event, KeyCode},
+    event::{
+        self, DisableMouseCapture, EnableMouseCapture, Event, KeyCode, MouseButton, MouseEvent,
+        MouseEventKind,
+    },
     execute,
     terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
 };
@@ -72,7 +75,10 @@ fn print_build_info() {
 fn run_application(terminal: &mut Terminal<CrosstermBackend<std::io::Stdout>>) -> io::Result<()> {
     let mut system = System::new_all();
     let mut last_update = Instant::now();
-    let mut app_state = AppState { show_help: false };
+    let mut app_state = AppState {
+        show_help: false,
+        selected_row_index: 0,
+    };
 
     loop {
         // Render the current state
@@ -94,19 +100,23 @@ fn run_application(terminal: &mut Terminal<CrosstermBackend<std::io::Stdout>>) -
             if app_state.show_help {
                 draw_help_window(frame, inner_area);
             } else {
-                draw_dashboard(frame, &system, inner_area);
+                draw_dashboard(frame, &system, inner_area, app_state.selected_row_index);
             }
         })?;
 
         // Handle user input
         if event::poll(Duration::from_millis(EVENT_POLL_TIMEOUT_MS))? {
-            if let Event::Key(key) = event::read()? {
-                handle_key_event(&mut app_state, key.code);
-
-                // Exit if 'q' was pressed
-                if key.code == KeyCode::Char('q') {
-                    break;
+            match event::read()? {
+                Event::Key(key) => {
+                    handle_key_event(&mut app_state, key.code);
+                    if key.code == KeyCode::Char('q') {
+                        break;
+                    }
                 }
+                Event::Mouse(me) => {
+                    handle_mouse_event(&mut app_state, me);
+                }
+                _ => {}
             }
         }
 
@@ -139,6 +149,17 @@ fn handle_key_event(app_state: &mut AppState, key_code: KeyCode) {
             if app_state.show_help {
                 app_state.show_help = false;
             }
+        }
+    }
+}
+
+fn handle_mouse_event(app_state: &mut AppState, me: MouseEvent) {
+    if let MouseEventKind::Down(MouseButton::Left) = me.kind {
+        // Assume process table starts at y = 8 (after info bar and header), adjust as needed
+        let process_table_start_y = 8;
+        let row = me.row as usize;
+        if row >= process_table_start_y {
+            app_state.selected_row_index = row - process_table_start_y;
         }
     }
 }

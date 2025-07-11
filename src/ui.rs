@@ -1,3 +1,4 @@
+use chrono::{self, Datelike};
 use once_cell::sync::Lazy;
 use ratatui::{
     layout::{Alignment, Constraint, Direction, Layout, Rect},
@@ -8,7 +9,6 @@ use ratatui::{
 };
 use std::collections::HashMap;
 use sysinfo::System;
-use chrono::{self, Datelike};
 
 use crate::helpers::{centered_rect, format_bytes, format_runtime, format_uptime};
 use crate::process::{
@@ -37,6 +37,7 @@ const PROCESS_MEDIUM_THRESHOLD: f32 = 20.0;
 /// Application state for UI rendering
 pub struct AppState {
     pub show_help: bool,
+    pub selected_row_index: usize, // Thêm trường này
 }
 
 /// Draw the help window overlay
@@ -59,7 +60,10 @@ pub fn draw_help_window(f: &mut Frame, area: Rect) {
         Line::from(vec![
             Span::raw(padding),
             Span::styled(
-                format!("Version {} - Conceived Jul 1, 2019", crate::build_info::VERSION),
+                format!(
+                    "Version {} - Conceived Jul 1, 2019",
+                    crate::build_info::VERSION
+                ),
                 Style::default().fg(Color::Cyan),
             ),
             Span::raw(padding),
@@ -116,7 +120,7 @@ pub fn draw_help_window(f: &mut Frame, area: Rect) {
 }
 
 /// Draw the main dashboard layout
-pub fn draw_dashboard(f: &mut Frame, sys: &System, area: Rect) {
+pub fn draw_dashboard(f: &mut Frame, sys: &System, area: Rect, selected_row_index: usize) {
     let layout = Layout::default()
         .direction(Direction::Vertical)
         .constraints([
@@ -126,7 +130,7 @@ pub fn draw_dashboard(f: &mut Frame, sys: &System, area: Rect) {
         .split(area);
 
     draw_info_bar(sys, f, layout[0]);
-    draw_process_table(sys, f, layout[1]);
+    draw_process_table(sys, f, layout[1], selected_row_index);
 }
 
 /// Draw the information bar with CPU, memory, and system info
@@ -148,11 +152,7 @@ pub fn draw_info_bar(sys: &System, f: &mut Frame, area: Rect) {
 }
 
 /// Draw CPU usage bars in a grid layout
-fn draw_cpu_bars(
-    cpus: &[sysinfo::Cpu],
-    f: &mut Frame,
-    area: Rect,
-) {
+fn draw_cpu_bars(cpus: &[sysinfo::Cpu], f: &mut Frame, area: Rect) {
     let cpu_count = cpus.len();
     let cpu_rows = (cpu_count + CPU_COLUMNS - 1) / CPU_COLUMNS;
     let total_padding = (CPU_COLUMNS - 1) * 3;
@@ -207,11 +207,7 @@ fn draw_cpu_bars(
 }
 
 /// Draw memory bars and system information
-fn draw_memory_and_info(
-    sys: &System,
-    f: &mut Frame,
-    area: Rect,
-) {
+fn draw_memory_and_info(sys: &System, f: &mut Frame, area: Rect) {
     let layout = Layout::default()
         .direction(Direction::Horizontal)
         .constraints([
@@ -290,11 +286,7 @@ fn draw_system_info(sys: &System, f: &mut Frame, area: Rect) {
 }
 
 /// Draw the process table
-pub fn draw_process_table(
-    sys: &System,
-    f: &mut Frame,
-    area: Rect,
-) {
+pub fn draw_process_table(sys: &System, f: &mut Frame, area: Rect, selected_row_index: usize) {
     let mut processes: Vec<_> = sys.processes().values().collect();
     processes.sort_by(|a, b| {
         b.cpu_usage()
@@ -322,6 +314,7 @@ pub fn draw_process_table(
             &priority_map,
             &memory_map,
             total_memory,
+            selected_row_index,
         )
     });
 
@@ -418,6 +411,11 @@ fn create_table_header() -> Row<'static> {
         Cell::from("TIME+").bold(),
         Cell::from("Command").bold(),
     ])
+    .style(
+        Style::default()
+            .bg(Color::Rgb(200, 220, 180))
+            .fg(Color::Black),
+    ) // Header background
 }
 
 fn get_table_constraints() -> [Constraint; 11] {
@@ -443,6 +441,7 @@ fn create_process_row<'a>(
     priority_map: &'a HashMap<u32, crate::process::ProcessPriority>,
     memory_map: &'a HashMap<u32, crate::process::ProcessMemory>,
     total_memory: f64,
+    selected_row_index: usize,
 ) -> Row<'a> {
     let pid = process.pid().as_u32();
     let user = process
@@ -487,21 +486,15 @@ fn create_process_row<'a>(
 
     let mut row = Row::new(cells);
 
-    // Alternating row colors
-    if index % 2 == 1 {
-        row = row.style(Style::default().bg(Color::Black));
-    } else {
-        row = row.style(Style::default().bg(Color::Rgb(30, 30, 30)));
-    }
-
-    // Selected row highlighting (currently always 0)
-    if index == 0 {
+    // Highlight selected row
+    if index == selected_row_index {
         row = row.style(
             Style::default()
-                .bg(Color::Blue)
-                .fg(Color::White)
-                .add_modifier(Modifier::REVERSED),
+                .bg(Color::Rgb(180, 220, 240))
+                .fg(Color::Black),
         );
+    } else {
+        row = row.style(Style::default());
     }
 
     row
